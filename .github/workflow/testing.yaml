@@ -1,0 +1,20 @@
+name: Testing API
+on: [push, pull_request]
+jobs:
+  testing-api:
+    runs-on: ubuntu-latest
+    env:
+      SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACOUNT_KEY }}
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+      - name: Creating and activating virtualenv
+        run: |
+          pip3 install virtualenv
+          virtualenv venv
+          source venv/Scripts/activate
+      - name: Installing dependencies
+        run: |
+          export GOOGLE_APLICATION_CREDENTIALS=$(python utilities/setter.py)
+          dvc pull model/model.pkl -r model-tracker
+          pytest tests.py
